@@ -144,8 +144,16 @@ router.post("/refresh", async (req: Request, res: Response) => {
 
 // Logout endpoint
 router.post("/logout", (req: Request, res: Response) => {
-  res.clearCookie("accessToken"); // Clear access token
-  res.clearCookie("refreshToken"); // Clear refresh token
+  res.clearCookie("accessToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  }); // Clear access token
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  }); // Clear refresh token
   res.status(200).json({ message: "Logged out successfully." });
 });
 
