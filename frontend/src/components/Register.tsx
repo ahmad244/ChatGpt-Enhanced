@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Box } from '@mui/material';
+import { Link } from 'react-router-dom';
 import api from '../api/apiClient';
 
 const Register: React.FC = () => {
@@ -53,6 +54,11 @@ const Register: React.FC = () => {
         >
           Register
         </Button>
+        <Box sx={{ mt: 2 }}>
+          <Typography variant="body2">
+            Already have an account? <Link to="/login">Login here</Link>
+          </Typography>
+        </Box>
       </Box>
     </Container>
   );
