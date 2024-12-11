@@ -13,14 +13,17 @@ const Login: React.FC = () => {
   const handleLogin = async () => {
     try {
       await api.post('/auth/login', { email, password });
-      const success = await refreshToken(); // Attempt to refresh token after login
-      if (success) {
-        setIsLoggedIn(true);
-        navigate('/'); // Redirect to the home page
-      } else {
-        setIsLoggedIn(false);
-        navigate('/login'); // Redirect to login if refresh fails
-      }
+     const success = await refreshToken(); // Remove this unnecessary call
+     if (success) {
+       setIsLoggedIn(true);
+       navigate('/'); 
+     } else {
+       setIsLoggedIn(false);
+       navigate('/login');
+     }
+     // Once login is successful, tokens are already set in cookies.
+     setIsLoggedIn(true);
+     navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
       alert('Invalid credentials');
