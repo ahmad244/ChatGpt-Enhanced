@@ -20,7 +20,7 @@ import cookieParser from "cookie-parser";
   // CORS Configuration
   app.use(
     cors({
-      origin: "http://localhost:5173", // Ensure this matches your frontend's URL
+      origin: process.env.FRONT_END_URL, // Ensure this matches your frontend's URL
       credentials: true, // Allow cookies and credentials to be sent
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Remove empty string and include 'OPTIONS'
       allowedHeaders: ["Content-Type", "Authorization", "X-Refresh-Request"], // Add any custom headers if used
