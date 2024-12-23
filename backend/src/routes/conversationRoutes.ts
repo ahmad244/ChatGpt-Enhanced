@@ -63,8 +63,21 @@ router.post('/', async (req, res) => {
 });
 
 
-
-router.post('/:id/messages', async (req, res) => {
+router.post('/:id/messages', async (req, res, next) => {
+  if (req.params.id === "undefined") {
+    const userId = (req as any).user.userId;
+    try {
+      console.log("Creating new conversation for user:", userId);
+      const conversation = await Conversation.create({ userId });
+      console.log("New conversation created with ID:", conversation._id);
+      req.params.id = (conversation._id as string).toString();
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  }
+  next();
+}, async (req, res) => {
   const userId = (req as any).user.userId;
   const { message, model } = req.body;
   const conversationId = req.params.id;

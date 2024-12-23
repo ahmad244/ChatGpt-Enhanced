@@ -59,6 +59,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   };
 
   const handleSendMessage = async () => {
+    console.log("Sending message:", message);
     if (message.trim() && !loading) {
       setLoading(true);
       await sendMessage();

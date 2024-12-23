@@ -61,11 +61,15 @@ const Chat: React.FC = () => {
   }, [conversationId, isLoggedIn]);
 
   const handleSendMessage = async () => {
-    if (!isLoggedIn || !conversationId) return;
+    if (!isLoggedIn) return;
+    const isNewConversation = !conversationId;
     try {
       const { data } = await addMessage(conversationId, message, selectedModel);
       setMessages([...messages, data.userMessage, data.assistantMessage]);
       setMessage("");
+      if (isNewConversation) {
+        navigate(`/chat/${data.assistantMessage.conversationId}`);
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
     }
@@ -73,9 +77,8 @@ const Chat: React.FC = () => {
 
   const createNewConversationHandler = async () => {
     try {
-      const { data } = await createConversation();
-      setConversations([...conversations, data]);
-      navigate(`/chat/${data.conversationId}`);
+      navigate(`/`);
+      setMessages([]);
     } catch (error) {
       console.error("Failed to create new conversation:", error);
     }
@@ -89,13 +92,8 @@ const Chat: React.FC = () => {
         (c) => c._id !== conversationId
       );
       setConversations(updatedConversations);
-
-      if (updatedConversations.length > 0) {
-        navigate(`/chat/${updatedConversations[0]._id}`);
-      } else {
-        navigate("/");
-        setMessages([]);
-      }
+      navigate("/");
+      setMessages([]);
     } catch (error) {
       console.error("Failed to delete conversation:", error);
     }
@@ -135,7 +133,6 @@ const Chat: React.FC = () => {
           closeSidebar={closeSidebar}
         />
       </Drawer>
-
       {/* Permanent sidebar for larger screens */}
       <Box
         sx={{
@@ -151,34 +148,18 @@ const Chat: React.FC = () => {
           closeSidebar={closeSidebar}
         />
       </Box>
-
       {/* Main Content Area */}
-      {conversationId ? (
-        <ChatWindow
-          messages={messages}
-          message={message}
-          setMessage={setMessage}
-          sendMessage={handleSendMessage}
-          selectedModel={selectedModel}
-          setSelectedModel={setSelectedModel}
-          deleteConversation={deleteConversation}
-          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-        />
-      ) : (
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            padding: "20px",
-          }}
-        >
-          <Typography variant="h6" color="textSecondary">
-            Select a conversation or create a new one to start chatting.
-          </Typography>
-        </Box>
-      )}
+
+      <ChatWindow
+        messages={messages}
+        message={message}
+        setMessage={setMessage}
+        sendMessage={handleSendMessage}
+        selectedModel={selectedModel}
+        setSelectedModel={setSelectedModel}
+        deleteConversation={deleteConversation}
+        toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+      />
     </Box>
   );
 };

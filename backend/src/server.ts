@@ -8,7 +8,6 @@ import authRoutes from "./routes/authRoutes";
 import modelRoutes from "./routes/modelRoutes";
 import userRoutes from "./routes/userRoutes";
 import conversationRoutes from "./routes/conversationRoutes";
-import messageRoutes from "./routes/messageRoutes";
 import analyticsRoutes from "./routes/analyticsRoutes";
 import { apiLimiter } from "./middleware/rateLimiter";
 import cookieParser from "cookie-parser";
@@ -37,7 +36,6 @@ import cookieParser from "cookie-parser";
   app.use("/models", modelRoutes);
   app.use("/users", userRoutes);
   app.use("/conversations", conversationRoutes);
-  app.use("/messages", messageRoutes);
   app.use("/analytics", analyticsRoutes);
 
   app.get("/", (req, res) => {
