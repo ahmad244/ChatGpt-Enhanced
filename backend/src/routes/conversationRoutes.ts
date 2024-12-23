@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { Conversation } from "../models/Conversation";
 import { Message } from "../models/Message";
@@ -18,7 +18,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 // Get all conversations for a user
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   try {
     const conversations = await Conversation.find({ userId });
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 // Get messages for a specific conversation
-router.get("/:id/messages", async (req, res) => {
+router.get("/:id/messages", async (req: Request, res: Response) => {
   const { id } = req.params;
 
   try {
@@ -48,7 +48,7 @@ router.get("/:id/messages", async (req, res) => {
  * POST /conversations
  * Create a new conversation.
  */
-router.post('/', async (req, res) => {
+router.post('/', async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
 
   try {
@@ -63,7 +63,7 @@ router.post('/', async (req, res) => {
 });
 
 
-router.post('/:id/messages', async (req, res, next) => {
+router.post('/:id/messages', async (req: Request, res: Response, next: NextFunction) => {
   if (req.params.id === "undefined") {
     const userId = (req as any).user.userId;
     try {
@@ -77,7 +77,7 @@ router.post('/:id/messages', async (req, res, next) => {
     }
   }
   next();
-}, async (req, res) => {
+}, async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   const { message, model } = req.body;
   const conversationId = req.params.id;
@@ -179,7 +179,7 @@ router.post('/:id/messages', async (req, res, next) => {
 
 
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   const { id } = req.params;
 

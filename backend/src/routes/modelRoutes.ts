@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import { authMiddleware } from "../middleware/authMiddleware";
 import { roleMiddleware } from "../middleware/roleMiddleware";
 import { ModelDB } from "../models/Model";
@@ -14,7 +14,7 @@ router.use(authMiddleware);
  * @desc    Create a new model
  * @access  Admin
  */
-router.post("/", roleMiddleware(["Admin"]), async (req, res) => {
+router.post("/", roleMiddleware(["Admin"]), async (req: Request, res: Response) => {
   const { name, value, description, endpoint, enabled } = req.body;
 
   // Validate required fields
@@ -52,7 +52,7 @@ router.post("/", roleMiddleware(["Admin"]), async (req, res) => {
  * @desc    Retrieve all models
  * @access  Authenticated users
  */
-router.get("/", async (req, res) => {
+router.get("/", async (req: Request, res: Response) => {
   try {
     const models = await ModelDB.find().sort({ order: 1 }).select("-__v"); // Exclude __v if not needed
     res.json(models);
@@ -67,7 +67,7 @@ router.get("/", async (req, res) => {
  * @desc    Update an existing model
  * @access  Admin
  */
-router.put("/:id", roleMiddleware(["Admin"]), async (req, res) => {
+router.put("/:id", roleMiddleware(["Admin"]), async (req: Request, res: Response) => {
   const { name, value, description, endpoint, enabled } = req.body;
 
   try {
@@ -106,7 +106,7 @@ router.put("/:id", roleMiddleware(["Admin"]), async (req, res) => {
  * @desc    Delete a model
  * @access  Admin
  */
-router.delete("/:id", roleMiddleware(["Admin"]), async (req, res) => {
+router.delete("/:id", roleMiddleware(["Admin"]), async (req: Request, res: Response) => {
   try {
     const model = await ModelDB.findByIdAndDelete(req.params.id);
     if (!model) {

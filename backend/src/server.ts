@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config(); // Load environment variables early
 
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/authRoutes";
@@ -38,10 +38,10 @@ import cookieParser from "cookie-parser";
   app.use("/conversations", conversationRoutes);
   app.use("/analytics", analyticsRoutes);
 
-  app.get("/", (req, res) => {
+  app.get("/", (req: Request, res: Response) => {
     res.send("API is running....");
   });
-  
+
   // Start the server
   const port = process.env.PORT || 5000;
   app.listen(port, () => console.log(`Server running on port ${port}`));
