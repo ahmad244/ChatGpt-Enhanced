@@ -14,5 +14,6 @@ export default defineConfig({
       '/conversations': process.env.VITE_API_URL!,
       '/analytics': process.env.VITE_API_URL!
     }
-  }
+  },
+  assetsInclude: ['**/*.lottie']
 });

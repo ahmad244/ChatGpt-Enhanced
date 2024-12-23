@@ -1,6 +1,6 @@
 import React from 'react';
-import Chat from '../components/Chat';
-import UserProfile from '../components/UserProfile';
+import Chat from '../components/features/Chat/Chat';
+import UserProfile from '../components/common/UserProfile';
 
 const HomePage: React.FC = () => {
   return (

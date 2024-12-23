@@ -1,5 +1,5 @@
 import React from 'react';
-import ModelManagement from './ModelManagement';
+import ModelManagement from './features/Chat/ModelManagement';
 import AnalyticsDashboard from './AnalyticsDashboard';
 
 const AdminPanel: React.FC = () => {

@@ -10,9 +10,10 @@ import {
   Divider,
 } from "@mui/material";
 import UserProfile from "./UserProfile";
+import { IConversation } from "../../types/conversation";
 
 interface SidebarProps {
-  conversations: any[];
+  conversations: IConversation[];
   createNewConversation: () => void;
   closeSidebar: () => void; // Add closeSidebar prop
 }
@@ -20,7 +21,7 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({
   conversations,
   createNewConversation,
-  closeSidebar, // Destructure closeSidebar
+  closeSidebar,
 }) => {
   const navigate = useNavigate();
   const { conversationId } = useParams<{ conversationId?: string }>();
@@ -37,17 +38,21 @@ const Sidebar: React.FC<SidebarProps> = ({
   return (
     <Box
       sx={{
-        width: { sm: "300px" },
-        height: "100%",
-        borderRight: "1px solid #ccc",
-        padding: "10px",
+        backgroundColor: "#1e1e1e",
+        height: "100vh", // Ensures full height of the viewport
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        boxSizing: "border-box",
       }}
     >
-      <Box>
-        <Typography variant="h6" gutterBottom>
+      {/* Header Section */}
+      <Box sx={{ padding: 2 }}>
+        <Typography
+          variant="h6"
+          gutterBottom
+          sx={{ color: "#ffffff", fontWeight: "bold" }}
+        >
           Conversations
         </Typography>
         <Button
@@ -57,10 +62,28 @@ const Sidebar: React.FC<SidebarProps> = ({
             createNewConversation();
             closeSidebar(); // Optionally close after creating a conversation
           }}
-          sx={{ marginTop: "10px", width: "100%" }}
+          sx={{
+            marginTop: "10px",
+            width: "100%",
+            backgroundColor: "#1db954", // Match button with dark theme
+            "&:hover": {
+              backgroundColor: "#17a74a",
+            },
+          }}
         >
           New Conversation
         </Button>
+      </Box>
+
+      {/* Conversation List */}
+      <Box
+        sx={{
+          flex: 1, // Takes up remaining space
+          overflowY: "auto", // Enables scrolling for overflow content
+          paddingX: 2,
+          paddingBottom: 2,
+        }}
+      >
         <List>
           {conversations.map((conv) => (
             <ListItem
@@ -69,19 +92,34 @@ const Sidebar: React.FC<SidebarProps> = ({
               sx={{
                 cursor: "pointer",
                 backgroundColor:
-                  conversationId === conv._id ? "#f0f0f0" : "inherit",
+                  conversationId === conv._id ? "#333333" : "inherit",
                 borderRadius: "5px",
                 marginBottom: "5px",
+                "&:hover": {
+                  backgroundColor: "#444444",
+                },
+                "&.Mui-selected": {
+                  backgroundColor: "#1db954",
+                  color: "#ffffff",
+                },
               }}
             >
-              <ListItemText primary={`Conversation ${conv.title}`} />
+              <ListItemText
+                primary={conv.title || `Conversation ${conv._id}`}
+                sx={{
+                  color: conversationId === conv._id ? "#ffffff" : "#a6a6a6",
+                }}
+              />
             </ListItem>
           ))}
         </List>
       </Box>
 
-      <Divider sx={{ marginY: 2 }} />
-      <UserProfile />
+      {/* Divider and User Profile */}
+      <Divider sx={{ borderColor: "#444" }} />
+      <Box sx={{ padding: 2 }}>
+        <UserProfile />
+      </Box>
     </Box>
   );
 };

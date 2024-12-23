@@ -1,8 +1,8 @@
 import React, { useState, useContext } from 'react';
 import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import { useNavigate, Link } from 'react-router-dom';
-import api, { refreshToken } from '../api/apiClient'; // Ensure refreshToken is exported
-import { AuthContext } from '../context/AuthContext';
+import api, { refreshToken } from '../../../api/apiClient';
+import { AuthContext } from '../../../context/AuthContext';
 
 const Login: React.FC = () => {
   const { setIsLoggedIn } = useContext(AuthContext);

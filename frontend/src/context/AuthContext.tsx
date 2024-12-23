@@ -1,5 +1,7 @@
-import React, { createContext, useState, useEffect, ReactNode } from 'react';
-import { refreshToken } from '../api/apiClient';
+import React, { createContext, useState, useEffect, ReactNode } from "react";
+import { refreshToken } from "../api/apiClient";
+import loadingGif from "../assets/loading.gif";
+import { Box } from "@mui/material";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -11,7 +13,9 @@ export const AuthContext = createContext<AuthContextType>({
   setIsLoggedIn: () => {},
 });
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +30,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>; // Or a loading spinner
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <img src={loadingGif} alt="loading" />
+      </Box>
+    );
   }
 
   return (

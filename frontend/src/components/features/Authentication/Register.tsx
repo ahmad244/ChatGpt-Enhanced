@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Container, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
-import api from '../api/apiClient';
+import api from '../../../api/apiClient';
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
