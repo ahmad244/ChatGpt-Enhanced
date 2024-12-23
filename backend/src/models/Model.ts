@@ -1,11 +1,12 @@
-import { Schema, model, Document } from 'mongoose';
+import { Schema, model, Document } from "mongoose";
 
 interface IModel extends Document {
   name: string;
-  value: string;        // Added 'value' field
-  description?: string; // Made 'description' optional
+  value: string;
+  description?: string;
   endpoint: string;
   enabled: boolean;
+  order?: number;
 }
 
 const modelSchema = new Schema<IModel>({
@@ -13,7 +14,8 @@ const modelSchema = new Schema<IModel>({
   value: { type: String, required: true, unique: true }, // Ensuring uniqueness
   description: { type: String },
   endpoint: { type: String, required: true },
-  enabled: { type: Boolean, default: true }
+  enabled: { type: Boolean, default: true },
+  order: { type: Number },
 });
 
-export const ModelDB = model<IModel>('Model', modelSchema);
+export const ModelDB = model<IModel>("Model", modelSchema);

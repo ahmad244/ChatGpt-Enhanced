@@ -12,7 +12,6 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import RichTextRenderer from "../../common/RichTextRenderer";
-import { fetchModels } from "../../../api/modelService";
 import { IModel } from "../../../types/model";
 import { IMessage } from "../../../types/message";
 import ModelManagement from "./ModelManagement";
@@ -38,9 +37,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
   toggleSidebar,
 }) => {
   const [loading, setLoading] = useState(false);
-  const [models, setModels] = useState<IModel[]>([]);
-  const [modelsLoading, setModelsLoading] = useState(true);
-  const [modelsError, setModelsError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement | null>(null);
   const textFieldRef = useRef<HTMLInputElement | null>(null);
 
@@ -49,25 +45,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
-  useEffect(() => {
-    const getModels = async () => {
-      try {
-        const fetchedModels = await fetchModels();
-        const enabledModels = fetchedModels.filter((model) => model.enabled);
-        setModels(enabledModels);
-        if (!selectedModel && enabledModels.length > 0) {
-          setSelectedModel(enabledModels[0].value);
-        }
-      } catch (error) {
-        setModelsError("Failed to load models.");
-      } finally {
-        setModelsLoading(false);
-      }
-    };
-
-    getModels();
-  }, [selectedModel, setSelectedModel]);
 
   const handleKeyDown = async (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -126,7 +103,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({
           <MenuIcon />
         </Button>
 
-        <ModelManagement />
+        <ModelManagement
+          selectedModel={selectedModel}
+          setSelectedModel={setSelectedModel}
+        />
 
         {deleteConversation && (
           <Button

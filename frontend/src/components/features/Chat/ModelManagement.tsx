@@ -9,13 +9,14 @@ import {
 import api from "../../../api/apiClient";
 import { AuthContext } from "../../../context/AuthContext";
 import { IModel } from "../../../types/model";
-
-const ModelManagement: React.FC = () => {
+const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (model: string) => void }> = ({
+  selectedModel,
+  setSelectedModel,
+}) => {
   const { isLoggedIn } = useContext(AuthContext);
-  const [models, setModels] = useState<IModel[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [models, setModels] = useState<IModel[]>([]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -24,7 +25,7 @@ const ModelManagement: React.FC = () => {
         .then((res) => {
           setModels(res.data);
           if (res.data.length > 0) {
-            setSelectedModel(res.data[0]._id); // Set the first model as default
+            setSelectedModel(res.data[0].value); // Set the first model as default
           }
         })
         .catch((error) => setError("Failed to fetch models."))
@@ -83,7 +84,7 @@ const ModelManagement: React.FC = () => {
             {models.map((model) => (
               <MenuItem
                 key={model._id}
-                value={model._id}
+                value={model.value}
                 sx={{
                   color: "#ffffff", // Text color
                   backgroundColor: "#1e1e1e", // Background for items
