@@ -21,7 +21,7 @@ if (!process.env.OPENAI_API_KEY) {
 router.get("/", async (req: Request, res: Response) => {
   const userId = (req as any).user.userId;
   try {
-    const conversations = await Conversation.find({ userId });
+    const conversations = await Conversation.find({ userId }).sort({ updatedAt: -1 });
     res.json(conversations);
   } catch (error) {
     console.error("Error fetching conversations:", error);
@@ -145,6 +145,10 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
       console.log("Failed to create assistant message.");
       return res.status(500).json({ message: "Failed to create assistant message" });
     }
+
+    // Update the conversation's updatedAt field
+    conversation.updatedAt = new Date();
+    await conversation.save();
 
     // If it's the first user and assistant messages, generate a title
     const allMessages = await Message.find({ conversationId: conversation._id }).sort({ timestamp: 1 });
