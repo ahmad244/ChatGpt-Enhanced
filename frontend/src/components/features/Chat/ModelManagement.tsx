@@ -9,6 +9,7 @@ import {
 import api from "../../../api/apiClient";
 import { AuthContext } from "../../../context/AuthContext";
 import { IModel } from "../../../types/model";
+
 const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (model: string) => void }> = ({
   selectedModel,
   setSelectedModel,
@@ -25,7 +26,7 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
         .then((res) => {
           setModels(res.data);
           if (res.data.length > 0) {
-            setSelectedModel(res.data[0].value); // Set the first model as default
+            setSelectedModel(res.data[0].value);
           }
         })
         .catch((error) => setError("Failed to fetch models."))
@@ -35,9 +36,9 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
 
   return (
     <Box
-    id="model-management"
+      id="model-management"
       sx={{
-        minWidth:"170px",
+        minWidth: "170px",
         borderRadius: "8px",
         maxWidth: "600px",
       }}
@@ -54,7 +55,6 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
         </Typography>
       ) : models.length > 0 ? (
         <Box>
-         
           <Select
             value={selectedModel}
             onChange={(e) => setSelectedModel(e.target.value)}
@@ -63,7 +63,7 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
               backgroundColor: "#1e1e1e", // Dark background color
               color: "#ffffff", // White text color
               borderRadius: "5px", // Rounded corners
-              px:2,
+              px: 2,
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none", // Remove the border
               },

@@ -6,7 +6,7 @@ import HomePage from "./pages/HomePage";
 import AdminPage from "./pages/AdminPage";
 import Chat from "./components/features/Chat/Chat";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
-import RedirectRoute from "./components/routes/RedirectRoute"; // Import the RedirectRoute
+import RedirectRoute from "./components/routes/RedirectRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,9 +14,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
-    primary: { main: "#1db954" }, // Adjust primary colors as needed
+    primary: { main: "#1db954" },
     background: {
-      default: "#121212", // Match the background from your screenshot
+      default: "#121212",
       paper: "#1e1e1e",
     },
     text: {

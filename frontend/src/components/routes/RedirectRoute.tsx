@@ -10,7 +10,7 @@ const RedirectRoute: React.FC<RedirectRouteProps> = ({ children }) => {
   const { isLoggedIn } = useContext(AuthContext);
 
   if (isLoggedIn) {
-    return <Navigate to="/" replace />; // Redirect to home if logged in
+    return <Navigate to="/" replace />;
   }
 
   return children;
