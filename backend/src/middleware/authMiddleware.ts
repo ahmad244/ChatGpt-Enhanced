@@ -11,13 +11,13 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction) 
   }
 
   try {
-    // Verify the access token
+    // test
     const payload = jwt.verify(accessToken, process.env.JWT_SECRET!);
 
-    // Attach user payload to the request
+    // test
     (req as any).user = payload;
 
-    next(); // Proceed to the next middleware or route handler
+    next(); // test
   } catch (error) {
     if (error instanceof jwt.TokenExpiredError) {
       return res.status(401).json({ message: 'Access token has expired. Please refresh your session.' });
