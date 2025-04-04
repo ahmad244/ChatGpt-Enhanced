@@ -14,7 +14,6 @@ const messageSchema = new Schema<IMessage>({
   content: { type: String, required: true },
   timestamp: { type: Date, default: Date.now },
   modelType: { type: String },
-
 });
 
 export const Message = model<IMessage>('Message', messageSchema);

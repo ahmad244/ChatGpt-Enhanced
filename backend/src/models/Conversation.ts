@@ -1,21 +1,13 @@
 import { Schema, model, Document } from 'mongoose';
 
-export interface IConversation extends Document {
-  userId: string;
+interface IConversation extends Document {
+  userId: Schema.Types.ObjectId;
   title: string;
-  updatedAt: Date;
 }
 
 const conversationSchema = new Schema<IConversation>({
-  userId: { type: String, required: true },
-  title: { type: String, required: false, default: 'New Conversation' }, // Default title
-  updatedAt: { type: Date, default: Date.now }, // Add updatedAt field
-});
-
-// Update the updatedAt field on save
-conversationSchema.pre('save', function (next) {
-  this.updatedAt = new Date();
-  next();
+  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  title: { type: String, required: true }
 });
 
 export const Conversation = model<IConversation>('Conversation', conversationSchema);

@@ -11,7 +11,7 @@ interface IModel extends Document {
 
 const modelSchema = new Schema<IModel>({
   name: { type: String, required: true },
-  value: { type: String, required: true, unique: true }, // Ensuring uniqueness
+  value: { type: String, required: true, unique: true },
   description: { type: String },
   endpoint: { type: String, required: true },
   enabled: { type: Boolean, default: true },

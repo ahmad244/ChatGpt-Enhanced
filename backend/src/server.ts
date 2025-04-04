@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config(); // Load environment variables early
+dotenv.config();
 
 import express, { Request, Response } from "express";
 import cors from "cors";
@@ -16,22 +16,19 @@ import cookieParser from "cookie-parser";
   await connectDB();
   const app = express();
 
-  // CORS Configuration
   app.use(
     cors({
-      origin: process.env.FRONT_END_URL, // Ensure this matches your frontend's URL
-      credentials: true, // Allow cookies and credentials to be sent
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], // Remove empty string and include 'OPTIONS'
-      allowedHeaders: ["Content-Type", "Authorization", "X-Refresh-Request"], // Add any custom headers if used
+      origin: process.env.FRONT_END_URL,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "X-Refresh-Request"],
     })
   );
 
-  // Middleware
   app.use(express.json());
   app.use(apiLimiter);
   app.use(cookieParser());
 
-  // Routes
   app.use("/auth", authRoutes);
   app.use("/models", modelRoutes);
   app.use("/users", userRoutes);
@@ -42,7 +39,6 @@ import cookieParser from "cookie-parser";
     res.send("API is running....");
   });
 
-  // Start the server
   const port = process.env.PORT || 5000;
   app.listen(port, () => console.log(`Server running on port ${port}`));
 })();

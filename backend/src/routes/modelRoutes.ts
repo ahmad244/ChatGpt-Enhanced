@@ -7,8 +7,6 @@ const router = Router();
 
 router.use(authMiddleware);
 
-// Admin routes
-
 /**
  * @route   POST /models
  * @desc    Create a new model
@@ -17,7 +15,6 @@ router.use(authMiddleware);
 router.post("/", roleMiddleware(["Admin"]), async (req: Request, res: Response) => {
   const { name, value, description, endpoint, enabled } = req.body;
 
-  // Validate required fields
   if (!name || !value || !endpoint) {
     return res
       .status(400)
@@ -25,7 +22,6 @@ router.post("/", roleMiddleware(["Admin"]), async (req: Request, res: Response) 
   }
 
   try {
-    // Check for duplicate 'value'
     const existingModel = await ModelDB.findOne({ value });
     if (existingModel) {
       return res
@@ -54,7 +50,7 @@ router.post("/", roleMiddleware(["Admin"]), async (req: Request, res: Response) 
  */
 router.get("/", async (req: Request, res: Response) => {
   try {
-    const models = await ModelDB.find().sort({ order: 1 }).select("-__v"); // Exclude __v if not needed
+    const models = await ModelDB.find().sort({ order: 1 }).select("-__v");
     res.json(models);
   } catch (error) {
     console.error("Error fetching models:", error);
@@ -71,7 +67,6 @@ router.put("/:id", roleMiddleware(["Admin"]), async (req: Request, res: Response
   const { name, value, description, endpoint, enabled } = req.body;
 
   try {
-    // If 'value' is being updated, ensure it's unique
     if (value) {
       const existingModel = await ModelDB.findOne({
         value,
