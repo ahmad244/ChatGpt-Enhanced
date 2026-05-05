@@ -6,10 +6,16 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import api from "../../../api/apiClient";
+import { fetchModels } from "../../../api/modelService";
 import { AuthContext } from "../../../context/AuthContext";
 import { IModel } from "../../../types/model";
-const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (model: string) => void }> = ({
+
+interface ModelSelectorProps {
+  selectedModel: string;
+  setSelectedModel: (model: string) => void;
+}
+
+const ModelManagement: React.FC<ModelSelectorProps> = ({
   selectedModel,
   setSelectedModel,
 }) => {
@@ -20,24 +26,23 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
 
   useEffect(() => {
     if (isLoggedIn) {
-      api
-        .get("/models")
-        .then((res) => {
-          setModels(res.data);
-          if (res.data.length > 0) {
-            setSelectedModel(res.data[0].value); // Set the first model as default
+      fetchModels()
+        .then((data) => {
+          setModels(data);
+          if (data.length > 0 && !selectedModel) {
+            setSelectedModel(data[0].value); // Set the first model as default
           }
         })
         .catch((error) => setError("Failed to fetch models."))
         .finally(() => setLoading(false));
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, selectedModel, setSelectedModel]);
 
   return (
     <Box
-    id="model-management"
+      id="model-management"
       sx={{
-        minWidth:"170px",
+        minWidth: "170px",
         borderRadius: "8px",
         maxWidth: "600px",
       }}
@@ -54,7 +59,6 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
         </Typography>
       ) : models.length > 0 ? (
         <Box>
-         
           <Select
             value={selectedModel}
             onChange={(e) => setSelectedModel(e.target.value)}
@@ -63,7 +67,7 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
               backgroundColor: "#1e1e1e", // Dark background color
               color: "#ffffff", // White text color
               borderRadius: "5px", // Rounded corners
-              px:2,
+              px: 2,
               "& .MuiOutlinedInput-notchedOutline": {
                 border: "none", // Remove the border
               },
@@ -89,7 +93,7 @@ const ModelManagement: React.FC<{ selectedModel: string; setSelectedModel: (mode
                   color: "#ffffff", // Text color
                   backgroundColor: "#1e1e1e", // Background for items
                   "&:hover": {
-                    backgroundColor: "#333333", // Highlight on hover
+                    backgroundColor: "#333333", // Highlight color on hover
                   },
                 }}
               >

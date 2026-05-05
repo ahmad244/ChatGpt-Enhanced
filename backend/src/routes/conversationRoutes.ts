@@ -18,7 +18,7 @@ if (!process.env.OPENAI_API_KEY) {
 }
 
 // Get all conversations for a user
-router.get("/", async (req: Request, res: Response) => {
+router.get("/", async (req: Request, res: Response): Promise<void> => {
   const userId = (req as any).user.userId;
   try {
     const conversations = await Conversation.find({ userId }).sort({ updatedAt: -1 });
@@ -30,7 +30,7 @@ router.get("/", async (req: Request, res: Response) => {
 });
 
 // Get messages for a specific conversation
-router.get("/:id/messages", async (req: Request, res: Response) => {
+router.get("/:id/messages", async (req: Request, res: Response): Promise<void> => {
   const { id } = req.params;
 
   try {
@@ -48,7 +48,7 @@ router.get("/:id/messages", async (req: Request, res: Response) => {
  * POST /conversations
  * Create a new conversation.
  */
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', async (req: Request, res: Response): Promise<void> => {
   const userId = (req as any).user.userId;
 
   try {
@@ -63,7 +63,7 @@ router.post('/', async (req: Request, res: Response) => {
 });
 
 
-router.post('/:id/messages', async (req: Request, res: Response, next: NextFunction) => {
+router.post('/:id/messages', async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   if (req.params.id === "undefined") {
     const userId = (req as any).user.userId;
     try {
@@ -73,11 +73,12 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
       req.params.id = (conversation._id as string).toString();
     } catch (error) {
       console.error("Error creating conversation:", error);
-      return res.status(500).json({ message: "Internal server error" });
+      res.status(500).json({ message: "Internal server error" });
+      return;
     }
   }
   next();
-}, async (req: Request, res: Response) => {
+}, async (req: Request, res: Response): Promise<void> => {
   const userId = (req as any).user.userId;
   const { message, model } = req.body;
   const conversationId = req.params.id;
@@ -89,12 +90,14 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
 
     if (!conversation) {
       console.log("Conversation not found.");
-      return res.status(404).json({ message: "Conversation not found." });
+      res.status(404).json({ message: "Conversation not found." });
+      return;
     }
 
     if (!message || message.trim() === "") {
       console.log("Message content is required.");
-      return res.status(400).json({ message: "Message content is required." });
+      res.status(400).json({ message: "Message content is required." });
+      return;
     }
 
     console.log("Creating user message for conversation ID:", conversation._id);
@@ -106,7 +109,8 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
 
     if (!userMessage) {
       console.log("Failed to create user message.");
-      return res.status(500).json({ message: "Failed to create user message" });
+      res.status(500).json({ message: "Failed to create user message" });
+      return;
     }
 
     console.log("Fetching previous messages for conversation ID:", conversation._id);
@@ -143,7 +147,8 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
 
     if (!assistantMessage) {
       console.log("Failed to create assistant message.");
-      return res.status(500).json({ message: "Failed to create assistant message" });
+      res.status(500).json({ message: "Failed to create assistant message" });
+      return;
     }
 
     // Update the conversation's updatedAt field
@@ -183,7 +188,7 @@ router.post('/:id/messages', async (req: Request, res: Response, next: NextFunct
 
 
 
-router.delete("/:id", async (req: Request, res: Response) => {
+router.delete("/:id", async (req: Request, res: Response): Promise<void> => {
   const userId = (req as any).user.userId;
   const { id } = req.params;
 
@@ -194,7 +199,8 @@ router.delete("/:id", async (req: Request, res: Response) => {
     });
 
     if (!conversation) {
-      return res.status(404).json({ message: "Conversation not found." });
+      res.status(404).json({ message: "Conversation not found." });
+      return;
     }
 
     await Message.deleteMany({ conversationId: id });

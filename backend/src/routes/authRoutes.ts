@@ -22,25 +22,23 @@ router.post(
       .isLength({ min: 6 })
       .withMessage("Password must be at least 6 characters long"),
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+      res.status(400).json({ errors: errors.array() });
+      return;
     }
 
     try {
       const { email, password } = req.body;
 
-      // Check if the user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
-        return res.status(409).json({ message: "User already exists." });
+        res.status(409).json({ message: "User already exists." });
+        return;
       }
 
-      // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create the new user
       const user = new User({ email, password: hashedPassword });
       await user.save();
 
@@ -53,18 +51,18 @@ router.post(
 );
 
 // Login endpoint
-router.post("/login", async (req: Request, res: Response) => {
+router.post("/login", async (req: Request, res: Response): Promise<void> => {
   try {
     const { email, password } = req.body;
     if (!email || !password) {
-      return res
-        .status(400)
-        .json({ message: "Email and password are required." });
+      res.status(400).json({ message: "Email and password are required." });
+      return;
     }
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).json({ message: "Invalid credentials." });
+      res.status(401).json({ message: "Invalid credentials." });
+      return;
     }
 
     const accessToken = generateAccessToken({
@@ -79,15 +77,15 @@ router.post("/login", async (req: Request, res: Response) => {
     // Set tokens in cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: true, // Ensures cookies are sent over HTTPS
-      sameSite: "none", // Allows cookies across domains
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjusted for development
       maxAge: JWT_ACCESS_TIMEOUT, // 15 minutes
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjusted for development
       maxAge: JWT_REFRESH_TIMEOUT, // 7 days
     });
 
@@ -99,13 +97,12 @@ router.post("/login", async (req: Request, res: Response) => {
 });
 
 // Refresh token endpoint
-router.post("/refresh", async (req: Request, res: Response) => {
-  const { refreshToken } = req.cookies;
-
+router.post("/refresh", async (req: Request, res: Response): Promise<void> => {
+  const refreshToken = req.cookies.refreshToken;
+  
   if (!refreshToken) {
-    return res
-      .status(401)
-      .json({ message: "Refresh token is missing. Please log in." });
+    res.status(401).json({ message: "Refresh token is missing. Please log in." });
+    return;
   }
 
   try {
@@ -123,15 +120,15 @@ router.post("/refresh", async (req: Request, res: Response) => {
 
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjusted for development
       maxAge: JWT_ACCESS_TIMEOUT, // 15 minutes
     });
 
     res.cookie("refreshToken", newRefreshToken, {
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+      secure: process.env.NODE_ENV === "production", // Only secure in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // Adjusted for development
       maxAge: JWT_REFRESH_TIMEOUT, // 7 days
     });
 
@@ -143,16 +140,16 @@ router.post("/refresh", async (req: Request, res: Response) => {
 });
 
 // Logout endpoint
-router.post("/logout", (req: Request, res: Response) => {
+router.post("/logout", (req: Request, res: Response): void => {
   res.clearCookie("accessToken", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   }); // Clear access token
   res.clearCookie("refreshToken", {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   }); // Clear refresh token
   res.status(200).json({ message: "Logged out successfully." });
 });

@@ -3,6 +3,8 @@ dotenv.config(); // Load environment variables early
 
 import express, { Request, Response } from "express";
 import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
 import { connectDB } from "./config/db";
 import authRoutes from "./routes/authRoutes";
 import modelRoutes from "./routes/modelRoutes";
@@ -11,10 +13,26 @@ import conversationRoutes from "./routes/conversationRoutes";
 import analyticsRoutes from "./routes/analyticsRoutes";
 import { apiLimiter } from "./middleware/rateLimiter";
 import cookieParser from "cookie-parser";
+import setupChatHandlers from "./socket/chatHandler";
+import setupVoiceChatHandlers from "./socket/voiceChatHandler";
 
 (async () => {
   await connectDB();
   const app = express();
+  const httpServer = createServer(app);
+
+  // Create Socket.io server
+  const io = new Server(httpServer, {
+    cors: {
+      origin: process.env.FRONT_END_URL,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    },
+  });
+
+  // Set up socket handlers
+  setupChatHandlers(io);
+  setupVoiceChatHandlers(io);
 
   // CORS Configuration
   app.use(
@@ -44,5 +62,5 @@ import cookieParser from "cookie-parser";
 
   // Start the server
   const port = process.env.PORT || 5000;
-  app.listen(port, () => console.log(`Server running on port ${port}`));
+  httpServer.listen(port, () => console.log(`Server running on port ${port}`));
 })();

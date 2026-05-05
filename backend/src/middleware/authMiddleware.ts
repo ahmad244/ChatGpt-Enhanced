@@ -1,31 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 
-// Middleware to authenticate the user based on the access token
-export const authMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  const { accessToken } = req.cookies; // Get access token from cookies
+export interface AuthenticatedRequest extends Request {
+  user?: any; // Define a more specific type based on your user structure
+}
 
-  // Check if the access token exists
-  if (!accessToken) {
-    return res.status(401).json({ message: 'Access token is missing. Please log in.' });
-  }
-
+export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    // Verify the access token
-    const payload = jwt.verify(accessToken, process.env.JWT_SECRET!);
-
-    // Attach user payload to the request
-    (req as any).user = payload;
-
-    next(); // Proceed to the next middleware or route handler
-  } catch (error) {
-    if (error instanceof jwt.TokenExpiredError) {
-      return res.status(401).json({ message: 'Access token has expired. Please refresh your session.' });
-    } else if (error instanceof jwt.JsonWebTokenError) {
-      return res.status(403).json({ message: 'Invalid access token.' });
-    } else {
-      return res.status(500).json({ message: 'Internal server error during token validation.' });
+    // Try to get token from header first
+    let token = req.header('Authorization')?.replace('Bearer ', '');
+    
+    // If not in header, check cookies
+    if (!token && req.cookies) {
+      token = req.cookies.accessToken;
     }
+    
+    if (!token) {
+      res.status(401).json({ message: 'No authentication token, access denied' });
+      return;
+    }
+    
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    
+    // Add user from payload
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid' });
   }
 };
 

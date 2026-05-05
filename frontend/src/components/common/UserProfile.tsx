@@ -1,22 +1,14 @@
-import React, { useEffect, useState, useContext } from "react";
-import { Box, Typography, Button, Avatar } from "@mui/material";
+import React, { useContext } from "react";
+import { Box, Typography, Button, Avatar, Stack } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/apiClient";
 import { AuthContext } from "../../context/AuthContext";
-import { IUser } from "../../types/user";
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const UserProfile: React.FC = () => {
-  const { isLoggedIn } = useContext(AuthContext);
-  const [profile, setProfile] = useState<IUser | null>(null);
-
-  // Fetch user profile
-  useEffect(() => {
-    if (isLoggedIn) {
-      api
-        .get("/users/me")
-        .then((res) => setProfile(res.data))
-        .catch((error) => console.error("Fetching profile failed:", error));
-    }
-  }, [isLoggedIn]);
+  const { isLoggedIn, userInfo, isAdmin } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   // Handle sign-out
   const handleSignOut = async () => {
@@ -28,51 +20,104 @@ const UserProfile: React.FC = () => {
     }
   };
 
-  return profile ? (
+  const navigateToAdmin = () => {
+    navigate('/admin');
+  };
+
+  const navigateToHome = () => {
+    navigate('/');
+  };
+
+  return userInfo ? (
     <Box
       sx={{
         display: "flex",
-        alignItems: "center",
+        flexDirection: "column",
         padding: "10px",
         borderRadius: "8px",
         backgroundColor: "#1e1e1e", // Dark background color
         marginTop: "auto",
         gap: "10px",
-        flexWrap: "wrap",
         color: "#ffffff", // White text color
       }}
     >
-      <Avatar
-        sx={{
-          bgcolor: "#3f51b5", // Avatar background color
-          color: "#fff", // Avatar text color
-        }}
-      >
-        {profile.email.charAt(0).toUpperCase()}
-      </Avatar>
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="body1" sx={{ fontWeight: 500, color: "#ffffff" }}>
-          {profile.email}
-        </Typography>
-        <Typography variant="body2" sx={{ color: "#a6a6a6" }}>
-          {profile.role}
-        </Typography>
+      <Box sx={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <Avatar
+          sx={{
+            bgcolor: "#3f51b5", // Avatar background color
+            color: "#fff", // Avatar text color
+          }}
+        >
+          {userInfo.email.charAt(0).toUpperCase()}
+        </Avatar>
+        <Box sx={{ flexGrow: 1 }}>
+          <Typography variant="body1" sx={{ fontWeight: 500, color: "#ffffff" }}>
+            {userInfo.email}
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#a6a6a6" }}>
+            {userInfo.role}
+          </Typography>
+        </Box>
       </Box>
-      <Button
-        variant="text"
-        size="small"
-        onClick={handleSignOut}
-        sx={{
-          textTransform: "none",
-          color: "#f44336",
-          fontWeight: 500,
-          "&:hover": {
-            backgroundColor: "rgba(244, 67, 54, 0.2)", // Slightly darker red hover
-          },
-        }}
-      >
-        Sign Out
-      </Button>
+      
+      <Stack direction="row" spacing={1} sx={{ mt: 1 }}>
+        {isAdmin && (
+          window.location.pathname.includes('/admin') ? (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<AdminPanelSettingsIcon />}
+              onClick={navigateToHome}
+              sx={{
+                textTransform: "none",
+                borderColor: "#1db954",
+                color: "#1db954",
+                "&:hover": {
+                  backgroundColor: "rgba(29, 185, 84, 0.1)",
+                  borderColor: "#1db954",
+                },
+              }}
+            >
+              Back to Chat
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              size="small"
+              startIcon={<AdminPanelSettingsIcon />}
+              onClick={navigateToAdmin}
+              sx={{
+                textTransform: "none",
+                borderColor: "#1db954",
+                color: "#1db954",
+                "&:hover": {
+                  backgroundColor: "rgba(29, 185, 84, 0.1)",
+                  borderColor: "#1db954",
+                },
+              }}
+            >
+              Admin Panel
+            </Button>
+          )
+        )}
+        <Button
+          variant="outlined"
+          size="small"
+          startIcon={<LogoutIcon />}
+          onClick={handleSignOut}
+          sx={{
+            textTransform: "none",
+            borderColor: "#f44336",
+            color: "#f44336",
+            "&:hover": {
+              backgroundColor: "rgba(244, 67, 54, 0.1)",
+              borderColor: "#f44336",
+            },
+          }}
+        >
+          Sign Out
+        </Button>
+      </Stack>
     </Box>
   ) : null;
 };

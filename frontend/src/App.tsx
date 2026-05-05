@@ -6,7 +6,8 @@ import HomePage from "./pages/HomePage";
 import AdminPage from "./pages/AdminPage";
 import Chat from "./components/features/Chat/Chat";
 import ProtectedRoute from "./components/routes/ProtectedRoute";
-import RedirectRoute from "./components/routes/RedirectRoute"; // Import the RedirectRoute
+import AdminRoute from "./components/routes/AdminRoute";
+import RedirectRoute from "./components/routes/RedirectRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -52,9 +53,9 @@ const App: React.FC = () => {
             <Route
               path="/admin"
               element={
-                <ProtectedRoute>
+                <AdminRoute>
                   <AdminPage />
-                </ProtectedRoute>
+                </AdminRoute>
               }
             />
             <Route

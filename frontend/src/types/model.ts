@@ -5,4 +5,12 @@ export interface IModel {
   description?: string;
   endpoint: string;
   enabled: boolean;
+  order?: number;
+}
+
+export interface IOpenAIModel {
+  id: string;
+  object: string;
+  created: number;
+  owned_by: string;
 }

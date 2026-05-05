@@ -25,6 +25,7 @@ interface ChatWindowProps {
   setSelectedModel: (model: string) => void;
   deleteConversation: () => void;
   toggleSidebar: () => void; // Toggle sidebar callback
+  conversationId: string;
 }
 const ChatWindow: React.FC<ChatWindowProps> = ({
   messages,

@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { AuthContext } from "../../../context/AuthContext";
 import Sidebar from "../../common/Sidebar";
 import ChatWindow from "./ChatWindow";
+import VoiceChat from "../../VoiceChat";
 import api, {
   fetchMessages,
   addMessage,
@@ -13,6 +14,8 @@ import { Box, Typography, Drawer, Button } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import { IMessage } from "../../../types/message";
 import { IConversation } from "../../../types/conversation";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../types";
 
 const Chat: React.FC = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -23,6 +26,7 @@ const Chat: React.FC = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { conversationId } = useParams<{ conversationId?: string }>();
   const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -159,7 +163,13 @@ const Chat: React.FC = () => {
         setSelectedModel={setSelectedModel}
         deleteConversation={deleteConversation}
         toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        conversationId={conversationId || ""}
       />
+
+      {/* Voice Chat Component */}
+      {conversationId && user && (
+        <VoiceChat userId={user._id} conversationId={conversationId} />
+      )}
     </Box>
   );
 };
