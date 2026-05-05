@@ -9,25 +9,30 @@ export const authMiddleware = (req: AuthenticatedRequest, res: Response, next: N
   try {
     // Try to get token from header first
     let token = req.header('Authorization')?.replace('Bearer ', '');
-    
+
     // If not in header, check cookies
     if (!token && req.cookies) {
       token = req.cookies.accessToken;
     }
-    
+
     if (!token) {
-      res.status(401).json({ message: 'No authentication token, access denied' });
-      return;
+      return res.status(401).json({ message: 'No authentication token, access denied' });
     }
-    
+
     // Verify token
     const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
-    
+
     // Add user from payload
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Token is not valid' });
+    if (error instanceof jwt.TokenExpiredError) {
+      return res.status(401).json({ message: 'Access token has expired. Please refresh your session.' });
+    } else if (error instanceof jwt.JsonWebTokenError) {
+      return res.status(403).json({ message: 'Invalid access token.' });
+    } else {
+      return res.status(500).json({ message: 'Internal server error during token validation.' });
+    }
   }
 };
 
